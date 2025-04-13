@@ -1,0 +1,26 @@
+body {
+    background-color: #f2f2f2;
+    font-family: Arial, sans-serif;
+    color: #030b30; /* Bleu marine */
+    padding: 20px;
+}
+
+h1 {
+    color: #030b30;
+}
+a {
+    color: #0066cc;
+}
+/* Reset général */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Supprimer les marges du HTML et du body */
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100vw;
+}

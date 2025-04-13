@@ -1,0 +1,100 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Cowork Connect{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        /* --- HEADER --- */
+        .banner {
+            width: 100vw;
+            height: 350px;
+            background: url("{% static 'images/logo.png' %}") center/cover no-repeat;
+        }
+
+        nav {
+            background-color: #030b30;
+            padding: 15px 0;
+            text-align: center;
+        }
+
+        nav a {
+            color: white;
+            margin: 0 25px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1.1em;
+            transition: color 0.3s;
+        }
+
+        nav a:hover {
+            color: #FFD700;
+        }
+
+        /* --- CONTENU --- */
+        main {
+            padding: 40px 20px;
+            min-height: 65vh;
+        }
+
+        /* --- FOOTER --- */
+        footer {
+        background-color: #030b30;
+        color: white;
+        padding: 30px 20px;
+        text-align: center;
+        }
+
+        .footer-contact {
+            margin-bottom: 15px;
+        }
+
+        .footer-contact p {
+            margin: 5px 0;
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- BANNIÈRE VISUELLE -->
+    <div class="banner"></div>
+
+    <!-- NAVIGATION -->
+    <nav>
+        <a href="{% url 'home' %}">Accueil</a>
+        <a href="{% url 'decouvrir' %}">Découvrir</a>
+        <a href="{% url 'inscription' %}">Inscription</a>
+        <a href="{% url 'connexion' %}">Connexion</a>
+    </nav>
+
+    <!-- CONTENU -->
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="footer-contact">
+            <p><strong>Nous contacter</strong></p>
+            <p>Téléphone : 36 30</p>
+            <p>Email : <a href="mailto:coworkconnect2025@gmail.com" style="color: white; text-decoration: underline;">
+                coworkconnect2025@gmail.com</a></p>
+        </div>
+        <p style="margin-top: 20px;">&copy; 2025 Cowork Connect</p>
+    </footer>
+    
+
+</body>
+</html>

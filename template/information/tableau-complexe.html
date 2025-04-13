@@ -1,0 +1,183 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <!-- En-tête amélioré avec bouton principal -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0">
+            <i class="fas fa-tachometer-alt"></i> Tableau de bord 
+            <span class="badge bg-secondary">{{ niveau_utilisateur|capfirst }}</span>
+        </h2>
+        <div>
+            <a href="{% url 'demande_ajout' %}" class="btn btn-primary">
+                <i class="fas fa-plus-circle"></i> Ajouter un objet
+            </a>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Colonne Objets Connectés -->
+        <div class="col-lg-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                    <h3 class="card-title mb-0">
+                        <i class="fas fa-plug"></i> Objets Connectés
+                    </h3>
+                    <a href="{% url 'demande_ajout' %}" class="btn btn-sm btn-success">
+                        <i class="fas fa-plus"></i> Nouveau
+                    </a>
+                </div>
+                
+                <div class="card-body">
+                    {% if objets %}
+                        <div class="list-group list-group-flush">
+                            {% for objet in objets %}
+                            <div class="list-group-item py-3">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h5 class="mb-1">{{ objet.nom }}</h5>
+                                        <small class="text-muted">
+                                            <i class="fas fa-{{ objet.type_objet|lower }}"></i> 
+                                            {{ objet.type_objet }} | 
+                                            <i class="fas fa-map-marker-alt"></i> {{ objet.emplacement }}
+                                        </small>
+                                    </div>
+                                    <div>
+                                        <a href="{% url 'demande_suppression' objet.id %}" 
+                                           class="btn btn-sm btn-outline-danger">
+                                            <i class="fas fa-trash-alt"></i> Supprimer
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="alert alert-info mb-0">
+                            <i class="fas fa-info-circle"></i> Aucun objet connecté disponible.
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Colonne Mes Demandes -->
+        <div class="col-lg-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-light">
+                    <h3 class="card-title mb-0">
+                        <i class="fas fa-clipboard-list"></i> Mes Demandes
+                    </h3>
+                </div>
+                
+                <div class="card-body">
+                    {% if demandes %}
+                        <div class="list-group list-group-flush">
+                            {% for demande in demandes %}
+                            <div class="list-group-item py-3">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <h5 class="mb-1">{{ demande.get_type_demande_display }}</h5>
+                                        <p class="mb-1">
+                                            <span class="badge bg-{% if demande.traitee %}success{% else %}warning{% endif %}">
+                                                {% if demande.traitee %}
+                                                    <i class="fas fa-check-circle"></i> Traitée
+                                                {% else %}
+                                                    <i class="fas fa-clock"></i> En attente
+                                                {% endif %}
+                                            </span>
+                                            <small class="text-muted ms-2">
+                                                {{ demande.date_demande|date:"d/m/Y H:i" }}
+                                            </small>
+                                        </p>
+                                    </div>
+                                    <a href="{% url 'details_demande' demande.id %}" 
+                                       class="btn btn-sm btn-outline-primary">
+                                        <i class="fas fa-eye"></i> Détails
+                                    </a>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="alert alert-info mb-0">
+                            <i class="fas fa-info-circle"></i> Aucune demande enregistrée.
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% for objet in objets %}
+<div class="mb-3 p-3 border rounded">
+    <div class="d-flex justify-content-between">
+        <div>
+            <h5>{{ objet.nom }}
+                {% if objet.nom_temporaire %}
+                <small class="text-muted">({{ objet.nom_temporaire }})</small>
+                {% endif %}
+            </h5>
+            <p class="mb-1">Statut: 
+                <span class="badge bg-{% if objet.statut == 'ACTIF' %}success{% elif objet.statut == 'INACTIF' %}danger{% else %}warning{% endif %}">
+                    {{ objet.get_statut_display }}
+                </span>
+            </p>
+        </div>
+        <div class="btn-group">
+            <a href="{% url 'modifier-objet' objet.id %}" class="btn btn-sm btn-outline-primary">
+                <i class="fas fa-edit"></i> Modifier
+            </a>
+            <a href="{% url 'controler-objet' objet.id %}" class="btn btn-sm btn-outline-{% if objet.statut == 'ACTIF' %}danger{% else %}success{% endif %}">
+                {% if objet.statut == 'ACTIF' %}
+                <i class="fas fa-power-off"></i> Désactiver
+                {% else %}
+                <i class="fas fa-power-off"></i> Activer
+                {% endif %}
+            </a>
+        </div>
+        <div class="mt-2">
+            {% if objet.zone %}
+            <span class="badge bg-info">
+                <i class="fas fa-map-marker-alt"></i> {{ objet.zone }}
+                {% if objet.nom_temporaire %}
+                - {{ objet.nom_temporaire }}
+                {% endif %}
+            </span>
+            {% endif %}
+            <a href="{% url 'affecter-objet' objet.id %}" class="btn btn-sm btn-outline-secondary ms-2">
+                <i class="fas fa-edit"></i> Affecter
+            </a>
+        </div>
+        <div class="mt-2">
+            <a href="{% url 'configurer-services' objet.id %}" class="btn btn-sm btn-outline-dark">
+                <i class="fas fa-cogs"></i> Configurer services
+            </a>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+<style>
+    .card {
+        border: none;
+        border-radius: 10px;
+    }
+    .card-header {
+        border-bottom: 1px solid rgba(0,0,0,.05);
+        border-radius: 10px 10px 0 0 !important;
+    }
+    .list-group-item {
+        border-left: none;
+        border-right: none;
+    }
+    .list-group-item:first-child {
+        border-top: none;
+    }
+    .badge {
+        font-weight: 500;
+        padding: 5px 8px;
+    }
+</style>
+{% endblock %}

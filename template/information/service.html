@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between mb-4">
+        <h2>
+            <i class="fas fa-cogs"></i>
+            Configuration des services - {{ objet.nom }}
+        </h2>
+        <a href="{% url 'ajouter-service' objet.id %}" class="btn btn-success">
+            <i class="fas fa-plus"></i> Nouveau service
+        </a>
+    </div>
+    
+    <div class="card">
+        <div class="card-body">
+            {% for service in services %}
+            <div class="border-bottom pb-3 mb-3">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4>{{ service.nom }}</h4>
+                        <span class="badge bg-{% if service.actif %}success{% else %}secondary{% endif %}">
+                            {{ service.get_protocole_display }}
+                        </span>
+                        <code class="ms-2">{{ service.endpoint }}:{{ service.port }}</code>
+                    </div>
+                    <div>
+                        <a href="{% url 'editer-service' service.id %}" class="btn btn-sm btn-outline-primary">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                {% if service.configuration %}
+                <div class="mt-2">
+                    <button class="btn btn-sm btn-info" type="button" data-bs-toggle="collapse" 
+                            data-bs-target="#config-{{ service.id }}">
+                        <i class="fas fa-eye"></i> Voir configuration
+                    </button>
+                    <div id="config-{{ service.id }}" class="collapse mt-2">
+                        <pre>{{ service.configuration|pprint }}</pre>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+            {% empty %}
+            <div class="alert alert-info">
+                Aucun service configuré pour cet objet.
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

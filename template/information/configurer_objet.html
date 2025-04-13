@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>
+            <i class="fas fa-cog"></i> 
+            Configuration de {{ objet.nom }}
+            <small class="text-muted">{{ objet.get_type_objet_display }}</small>
+        </h2>
+        <a href="{% url 'tableau-objet' %}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left"></i> Retour
+        </a>
+    </div>
+
+    <div class="row">
+        <!-- Paramètres -->
+        <div class="col-lg-6">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">
+                        <i class="fas fa-sliders-h"></i> Paramètres
+                    </h3>
+                </div>
+                <div class="card-body">
+                    {% if objet.type_objet == 'THERMOSTAT' %}
+                        <form method="post">
+                            {% csrf_token %}
+                            {% crispy form %}
+                            <button type="submit" class="btn btn-primary mt-3">
+                                <i class="fas fa-save"></i> Enregistrer
+                            </button>
+                        </form>
+                    {% else %}
+                        <p class="text-muted">Aucun paramètre configurable pour ce type d'objet</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Programmation -->
+        <div class="col-lg-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white d-flex justify-content-between">
+                    <h3 class="mb-0">
+                        <i class="far fa-clock"></i> Programmation
+                    </h3>
+                    <a href="{% url 'creer-programme' objet.pk %}" 
+                       class="btn btn-sm btn-success">
+                        <i class="fas fa-plus"></i> Ajouter
+                    </a>
+                </div>
+                <div class="card-body">
+                    {% if programmes %}
+                        <div class="list-group">
+                            {% for programme in programmes %}
+                            <div class="list-group-item">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h5 class="mb-1">{{ programme.nom }}</h5>
+                                        <small>
+                                            {{ programme.get_jours_display }} |
+                                            {{ programme.heure_debut|time:"H:i" }} - {{ programme.heure_fin|time:"H:i" }}
+                                        </small>
+                                        {% if programme.parametres %}
+                                            <div class="mt-1">
+                                                {% for key, value in programme.parametres.items %}
+                                                    <span class="badge bg-info">{{ key }}: {{ value }}</span>
+                                                {% endfor %}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="btn-group">
+                                        <a href="{% url 'modifier-programme' programme.pk %}"
+                                           class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <form method="post" action="{% url 'supprimer-programme' programme.pk %}">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-sm btn-outline-danger">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="alert alert-info">
+                            Aucun programme configuré
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

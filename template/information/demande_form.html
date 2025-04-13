@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Demande d'{{ action }} d'objet</h2>
+    
+    {% if action == 'Suppression' %}
+    <div class="alert alert-warning mb-4">
+        Vous allez demander la suppression de : <strong>{{ objet.nom }}</strong>
+    </div>
+    {% endif %}
+    
+    {% if not demande.traitee and demande.type_demande == 'AJ' %}
+<div class="alert alert-warning mt-3">
+    Votre demande est en cours d'examen par l'administrateur
+</div>
+{% endif %}
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Soumettre la demande</button>
+    </form>
+</div>
+{% endblock %}

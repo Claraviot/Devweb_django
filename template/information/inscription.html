@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Inscription - Cowork Connect{% endblock %}
+
+{% block content %}
+<style>
+    .form-container {
+        max-width: 500px;
+        margin: 80px auto;
+        padding: 30px;
+        border-radius: 10px;
+        background-color: #f9f9f9;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    input[type=text], input[type=email], input[type=password] {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 15px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+    }
+
+    input[type=submit] {
+        background-color: #003366;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+    }
+
+    input[type=submit]:hover {
+        background-color: #001F3F;
+    }
+</style>
+
+<div class="form-container">
+    <h2>Créer un compte</h2>
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" value="S'inscrire">
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Découvrir Cowork Connect{% endblock %}
+
+{% block content %}
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        
+    }
+
+    .image-cowork {
+        width: 100vw;
+        margin: 0 auto;
+        display: block;
+        border-radius: 12px;
+    }
+
+    .section {
+        margin: 40px 0;
+    }
+
+    .filtres form {
+        margin-top: 20px;
+    }
+
+    .filtres select {
+        padding: 8px;
+        margin-right: 10px;
+    }
+
+    .evenement {
+        background-color: #f5f5f5;
+        padding: 15px;
+        margin-top: 10px;
+        border-radius: 8px;
+    }
+
+    h2 {
+        color: #003366;
+    }
+</style>
+
+<h1>Bienvenue dans Cowork Connect</h1>
+
+<div class="section">
+    <h2>Notre espace de coworking</h2>
+    <p>Notre coworking est équipé de nombreux objets connectés : thermostats, caméras de sécurité, imprimantes intelligentes, capteurs de présence...  
+    Ces équipements sont accessibles et modifiables selon votre <strong>niveau d'utilisateur</strong> après inscription.</p>
+</div>
+
+<div class="section">
+    <h2>Gagnez des points avec les événements</h2>
+    <p>En participant à des événements ou conférences organisés dans le coworking, vous pouvez accumuler des points pour faire évoluer votre niveau (Débutant → Intermédiaire → Avancé → Expert).</p>
+
+    <div class="filtres">
+        <form method="get">
+            <label for="domaine">Filtrer par domaine :</label>
+            <select name="domaine" id="domaine">
+                <option value="tous">Tous</option>
+                <option value="science">Science</option>
+                <option value="art">Art</option>
+                <option value="finance">Finance</option>
+                <option value="business">Business</option>
+                <option value="cinema">Cinéma</option>
+                <option value="maths">Maths</option>
+                <option value="informatique">Informatique</option>
+                <option value="ia">IA</option>
+            </select>
+
+            <label for="mois">Filtrer par mois :</label>
+            <select name="mois" id="mois">
+                <option value="tous">Tous</option>
+                <option value="1">Janvier</option>
+                <option value="2">Février</option>
+                <option value="3">Mars</option>
+                <option value="4">Avril</option>
+                <option value="5">Mai</option>
+                <option value="6">Juin</option>
+                <option value="7">Juillet</option>
+                <option value="8">Août</option>
+                <option value="9">Septembre</option>
+                <option value="10">Octobre</option>
+                <option value="11">Novembre</option>
+                <option value="12">Décembre</option>
+            </select>
+
+            <button type="submit">Filtrer</button>
+        </form>
+    </div>
+
+    <div class="resultats">
+        {% if evenements %}
+            {% for e in evenements %}
+                <div class="evenement">
+                    <h3>{{ e.titre }}</h3>
+                    <p><strong>Domaine :</strong> {{ e.domaine }} | <strong>Date :</strong> {{ e.date|date:"j F Y" }}</p>
+                    <p>{{ e.description }}</p>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>Aucun événement trouvé.</p>
+        {% endif %}
+    </div>
+</div>
+
+<p><a href="{% url 'home' %}">← Retour à l'accueil</a></p>
+{% endblock %}

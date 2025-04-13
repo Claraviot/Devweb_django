@@ -1,0 +1,205 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid">
+    <h2 class="mt-4">
+        <i class="fas fa-chart-line"></i> Surveillance des ressources
+    </h2>
+    
+    <!-- Cartes de synthèse -->
+    <div class="row mt-4">
+        <div class="col-xl-3 col-md-6">
+            <div class="card bg-primary text-white mb-4">
+                <div class="card-body">
+                    <h5>Consommation totale</h5>
+                    <h2>{{ consommation_globale.total|floatformat:2 }} kWh</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card bg-warning text-white mb-4">
+                <div class="card-body">
+                    <h5>Moyenne quotidienne</h5>
+                    <h2>{{ consommation_globale.moyenne|floatformat:2 }} kWh</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card bg-danger text-white mb-4">
+                <div class="card-body">
+                    <h5>Alertes actives</h5>
+                    <h2>{{ alertes.count }}</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Graphiques -->
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="fas fa-chart-bar"></i> Consommation hebdomadaire
+                </div>
+                <div class="card-body">
+                    <canvas id="chartConsommation" width="100%" height="40"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="fas fa-chart-pie"></i> Répartition par type
+                </div>
+                <div class="card-body">
+                    <canvas id="chartRepartition" width="100%" height="40"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Tableaux -->
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="fas fa-bolt"></i> Top consommateurs
+                </div>
+                <div class="card-body">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Objet</th>
+                                <th>Type</th>
+                                <th>Consommation (kWh)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for objet in top_consommateurs %}
+                            <tr>
+                                <td>{{ objet.objet__nom }}</td>
+                                <td>{{ objet.objet__type_objet }}</td>
+                                <td>{{ objet.total|floatformat:2 }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-6">
+            <div class="card mb-4">
+                <div class="card-header bg-danger text-white">
+                    <i class="fas fa-exclamation-triangle"></i> Alertes d'optimisation
+                </div>
+                <div class="card-body">
+                    <div class="list-group">
+                        {% for alerte in alertes %}
+                        <div class="list-group-item list-group-item-action">
+                            <div class="d-flex justify-content-between">
+                                <h5 class="mb-1">{{ alerte.get_type_alerte_display }}</h5>
+                                <span class="badge bg-{% if alerte.gravite == 'HIGH' %}danger{% elif alerte.gravite == 'MED' %}warning{% else %}info{% endif %}">
+                                    {{ alerte.get_gravite_display }}
+                                </span>
+                            </div>
+                            <p class="mb-1">{{ alerte.message }}</p>
+                            <small>Sur {{ alerte.objet.nom }} ({{ alerte.objet.type_objet }})</small>
+                        </div>
+                        {% empty %}
+                        <div class="alert alert-success">
+                            Aucune alerte active - Tout fonctionne normalement
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Boutons d'action -->
+    <div class="mb-4">
+        <a href="{% url 'generer-rapport' %}" class="btn btn-primary">
+            <i class="fas fa-file-pdf"></i> Générer rapport PDF
+        </a>
+        <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalOptimisation">
+            <i class="fas fa-magic"></i> Suggestions d'optimisation
+        </button>
+    </div>
+</div>
+
+<!-- Modal d'optimisation -->
+<div class="modal fade" id="modalOptimisation" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Suggestions d'optimisation</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    {% for suggestion in suggestions_optimisation %}
+                    <div class="col-md-6 mb-3">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h5>{{ suggestion.titre }}</h5>
+                                <p>{{ suggestion.description }}</p>
+                                <p class="text-muted">Économie estimée: {{ suggestion.economie }} kWh/jour</p>
+                            </div>
+                            <div class="card-footer">
+                                <button class="btn btn-sm btn-outline-primary">
+                                    Appliquer
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+// Script pour initialiser les graphiques
+document.addEventListener('DOMContentLoaded', function() {
+    // Graphique de consommation
+    const ctx1 = document.getElementById('chartConsommation').getContext('2d');
+    new Chart(ctx1, {
+        type: 'line',
+        data: {
+            labels: ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'],
+            datasets: [{
+                label: 'Consommation (kWh)',
+                data: [12, 19, 15, 17, 14, 10, 8],
+                borderColor: 'rgb(75, 192, 192)',
+                tension: 0.1
+            }]
+        }
+    });
+    
+    // Graphique de répartition
+    const ctx2 = document.getElementById('chartRepartition').getContext('2d');
+    new Chart(ctx2, {
+        type: 'doughnut',
+        data: {
+            labels: ['Lumières', 'Climatisation', 'Appareils', 'Autres'],
+            datasets: [{
+                data: [25, 40, 20, 15],
+                backgroundColor: [
+                    'rgb(255, 99, 132)',
+                    'rgb(54, 162, 235)',
+                    'rgb(255, 205, 86)',
+                    'rgb(201, 203, 207)'
+                ]
+            }]
+        }
+    });
+});
+</script>
+{% endblock %}

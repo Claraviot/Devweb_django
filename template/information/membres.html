@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Membres du Coworking{% endblock %}
+
+{% block content %}
+<h1>Liste des membres du coworking</h1>
+
+<form method="get" style="margin-bottom: 20px;">
+    <label for="societe">Filtrer par société :</label>
+    <input type="text" name="societe" id="societe" value="{{ societe_filtre }}">
+    <button type="submit">Filtrer</button>
+</form>
+
+<div style="display: flex; flex-wrap: wrap; gap: 20px;">
+    {% for profil in profils %}
+        <div style="background-color: #f9f9f9; padding: 20px; border-radius: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); width: 280px;">
+            
+            <!-- ✅ Affiche la photo réelle ou un avatar par défaut -->
+            {% if profil.show_photo and profil.photo %}
+                <img src="{{ profil.photo.url }}" alt="Photo de {{ profil.user.username }}"
+                     style="width: 120px; height: 120px; object-fit: cover; border-radius: 8px; margin-bottom: 10px;">
+            {% else %}
+                <img src="{% static 'images/default-avatar.png' %}" alt="Avatar par défaut"
+                     style="width: 120px; height: 120px; object-fit: cover; border-radius: 8px; margin-bottom: 10px;">
+            {% endif %}
+
+            <strong>@{{ profil.user.username }}</strong><br><br>
+
+            {% if profil.show_prenom %}
+                <strong>Prénom :</strong> {{ profil.prenom|default:"-" }}<br>
+            {% endif %}
+            {% if profil.show_nom %}
+                <strong>Nom :</strong> {{ profil.nom|default:"-" }}<br>
+            {% endif %}
+            {% if profil.show_sexe %}
+                <strong>Sexe :</strong> {{ profil.get_sexe_display|default:"-" }}<br>
+            {% endif %}
+
+            <strong>Société :</strong> {{ profil.societe|default:"-" }}<br>
+            <strong>Poste :</strong> {{ profil.poste|default:"-" }}<br>
+            <strong>Niveau :</strong> {{ profil.get_niveau_display|default:"-" }}
+        </div>
+    {% empty %}
+        <p>Aucun membre trouvé.</p>
+    {% endfor %}
+</div>
+
+<p style="margin-top: 30px;"><a href="{% url 'home' %}">← Retour à l'accueil</a></p>
+{% endblock %}

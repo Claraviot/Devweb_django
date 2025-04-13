@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header">
+            <h2>
+                <i class="fas fa-edit"></i> 
+                Modifier {{ objet.nom }}
+                {% if objet.nom_temporaire %}
+                <small class="text-muted">({{ objet.nom_temporaire }})</small>
+                {% endif %}
+            </h2>
+        </div>
+        <div class="card-body">
+            {% crispy form %}
+        </div>
+    </div>
+</div>
+{% endblock %}

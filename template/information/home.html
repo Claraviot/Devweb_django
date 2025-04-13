@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Accueil Cowork Connect{% endblock %}
+
+{% block content %}
+<style>
+    .container {
+        max-width: 600px;
+        margin: 100px auto;
+        text-align: center;
+    }
+
+    .btn {
+        display: inline-block;
+        padding: 12px 25px;
+        margin: 10px;
+        background-color: #003366;
+        color: white;
+        text-decoration: none;
+        border-radius: 8px;
+        font-weight: bold;
+    }
+
+    .btn:hover {
+        background-color: #001F3F;
+    }
+</style>
+
+<div class="container">
+    <h1>Bienvenue sur Cowork Connect</h1>
+    <p>La plateforme intelligente de coworking connecté</p>
+
+    {% if user.is_authenticated %}
+        <p>Bienvenue <strong>{{ user.username }}</strong> 👋</p>
+        <a class="btn" href="{% url 'logout' %}">Se déconnecter</a>
+        <a class="btn" href="{% url 'profil' %}">Mon profil</a>
+        <a class="btn" href="{% url 'decouvrir' %}">Découvrir</a>
+        <a class="btn" href="{% url 'membres' %}">Membres</a>
+        {% if user.profil.niveau == 'avance' %}
+        <a class="btn btn-avance" href="{% url 'tableau-complexe' %}">
+            Tableau de bord avancé
+        </a>
+    {% endif %}
+    </div>
+    {% else %}
+        <a class="btn" href="{% url 'inscription' %}">S'inscrire</a>
+        <a class="btn" href="{% url 'connexion' %}">Se connecter</a>
+        <a class="btn" href="{% url 'decouvrir' %}">Découvrir</a>
+    {% endif %}
+</div>
+{% endblock %}

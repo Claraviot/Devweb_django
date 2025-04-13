@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header">
+            <h2>Détails de la demande</h2>
+        </div>
+        <div class="card-body">
+            <h4>Type: {{ demande.get_type_demande_display }}</h4>
+            <p><strong>Statut:</strong> 
+                {% if demande.traitee %}
+                    <span class="text-success">Traitée</span>
+                {% else %}
+                    <span class="text-warning">En attente</span>
+                {% endif %}
+            </p>
+            <p><strong>Date demande:</strong> {{ demande.date_demande }}</p>
+            
+            <hr>
+            
+            <h4>Détails:</h4>
+            {% if demande.type_demande == 'AJ' %}
+                <p><strong>Nom objet:</strong> {{ demande.objet.nom }}</p>
+                <p><strong>Modèle:</strong> {{ demande.objet.modele }}</p>
+                <p><strong>Type:</strong> {{ demande.objet.type_objet }}</p>
+                <p><strong>Fonction:</strong> {{ demande.objet.fonction }}</p>
+                <p><strong>Emplacement:</strong> {{ demande.objet.emplacement }}</p>
+                <p><strong>Raison:</strong> {{ demande.details.raison }}</p>
+            {% else %}
+                <p><strong>Objet:</strong> {{ demande.objet.nom }}</p>
+                <p><strong>Raison:</strong> {{ demande.details.raison }}</p>
+            {% endif %}
+            
+            {% if demande.details.commentaires %}
+                <p><strong>Commentaires:</strong> {{ demande.details.commentaires }}</p>
+            {% endif %}
+            
+            <a href="{% url 'tableau-complexe' %}" class="btn btn-secondary mt-3">Retour</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

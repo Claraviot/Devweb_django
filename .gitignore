@@ -1,0 +1,14 @@
+# Virtualenv
+.venv/
+
+# Fichiers temporaires Python
+__pycache__/
+*.py[cod]
+*.sqlite3
+*.log
+
+# Fichiers de configuration personnels
+.env
+
+# Fichiers médias utilisateurs (ex: photos uploadées)
+media/
